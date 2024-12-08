@@ -37,3 +37,5 @@ lerna-debug.log*
 uploadedFiles/img_user/*
 uploadedFiles/kandidat_img/*
 uploadedFiles/mitra_img/*
+
+.env
