@@ -11,6 +11,7 @@ const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 import * as express from 'express';
 import { join } from 'path';
+import { HttpExceptionFilter } from './exception/http-exception.filter';
 
 
 async function bootstrap() {
@@ -73,6 +74,7 @@ async function bootstrap() {
       app.use('/uploads', express.static(join(process.cwd(), 'uploads')));
     // app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
     app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalFilters(new HttpExceptionFilter());
     app.use(bodyParser.json({limit: "50mb"}))
     app.setGlobalPrefix('/api/');
     await app.listen(3001);

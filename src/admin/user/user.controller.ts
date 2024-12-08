@@ -1,17 +1,38 @@
-import { Controller, Get, Post, Body, Put, Param, Patch, ParseIntPipe, UsePipes, ValidationPipe, Delete, UseGuards, SetMetadata, Req, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Patch, ParseIntPipe, UsePipes, ValidationPipe, Delete, UseGuards, SetMetadata, Req, Res, BadGatewayException, BadRequestException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { HelperFun } from 'src/helper/helper_fun';
 import { UploadFotoDto } from './dto/upload-foto-dto';
 import { Response as ExResponse } from 'express';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { RolesGuard } from 'src/auth/roles/roles.guard';
+import { Roles } from 'src/auth/roles/roles.decorator';
 @Controller('user')
 // @UseGuards(AuthGuard)
 // @UseGuards(JwtAuthGuard)
 export class UserController {
     constructor(private userService: UserService){}
+
+    @Post()
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles('superadmin', 'admin')
+    async create(@Body() body : CreateUserDto){
+        try {
+            if (body.password !== body.password_confirmation) {
+                throw new BadRequestException('Password Confirmation is not match!')
+            }
+            console.log(body);
+            // const data = await this.userService.createData(body);
+            return {
+                message: "Berhasil menyimpan data.",
+                statusCode : 200,
+                data : body
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
 
     @UseGuards(AuthGuard)
     @Get()

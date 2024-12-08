@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Post, Request, Res, UseGuards} from '@nestjs/common';
-import { UserService } from './user/user.service';
 import { RateLimiterGuard,RateLimit } from 'nestjs-rate-limiter';
 import { HelperFun } from './helper/helper_fun';
 import { LoginDto } from './auth/dto/login.dto';
 import { AuthService } from './auth/auth.service';
+import { UserService } from './admin/user/user.service';
 
 
 // @SkipThrottle()
