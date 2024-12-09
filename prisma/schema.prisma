@@ -14,7 +14,7 @@ model users {
   name              String           @db.VarChar(255)
   username          String?          @db.VarChar(255)
   email             String           @unique(map: "users_email_unique") @db.VarChar(255)
-  phone             String           @unique(map: "users_phone_unique") @db.VarChar(255)
+  phone             BigInt           @unique(map: "users_phone_unique")
   email_verified_at DateTime?        @db.Timestamp(0)
   phone_verified_at DateTime?        @db.Timestamp(0)
   verify_code       String?          @db.VarChar(255)

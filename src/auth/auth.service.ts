@@ -14,7 +14,7 @@ export class AuthService {
 
   async signIn(
     data: any,
-  ): Promise<{ access_token: string }> {
+  ): Promise<any> {
     try {
       let user = await this.usersService.findEmail(data.email);
       console.log(user.password, data.password);
@@ -26,6 +26,8 @@ export class AuthService {
       user =  HelperFun.toObject(user)
       const payload = { id: user.id,  role:user.role };
       return {
+        name : user.name,
+        role:user.role,
         access_token: await this.jwtService.signAsync(payload),
       }; 
     } catch (error) {

@@ -1,5 +1,6 @@
-import { Injectable, Param, Body } from '@nestjs/common';
+import { Injectable, Param, Body, BadGatewayException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -28,6 +29,65 @@ export class UserService {
         );
     }
 
+    async existingUser(data:any){
+        return await this.dbService.users.findFirst({
+            where:{
+                OR : [
+                    {
+                        phone : data.phone
+                    },
+                    {
+                        email : data.email
+                    }
+                ]
+            }
+        })
+    }
+
+    async existingUserExcludeId(id : number, data: any){
+        return await this.dbService.users.findFirst({
+            where:{
+                NOT : {
+                    id : id,
+                },
+                OR : [
+                    {
+                        phone : data.phone
+                    },
+                    {
+                        email : data.email
+                    }
+                ]
+            }
+        })
+    }
+
+    async findAllPagin(page : number, limit:number){
+        try {
+            const skip = (page - 1) * limit || 0;
+            const [data, total] = await Promise.all([
+                // isi data
+                this.dbService.users.findMany({
+                    skip,
+                    take : limit
+                }),
+    
+                // isi total
+                this.dbService.users.count()
+            ])
+    
+            return {
+                data,
+                total,
+                page,
+                limit,
+                totalPages : Math.ceil(total / limit)
+            }   
+        } catch (error) {
+            throw new BadGatewayException(error)
+        }
+    }
+
     async findUserMitra(){
         // jika ditampilkan dalam query = "select a.*, b.* from user a inner join role on a.role_id = b.id where b.platform_induk_st = 1;
         return await this.dbService.users.findMany(
@@ -45,6 +105,20 @@ export class UserService {
         return await this.dbService.users.create({
             data
         })
+    }
+
+    async createAuth(data : any){
+        try {
+            const saltOrRounds = 10;
+            data.password = await bcrypt.hash(data.password, saltOrRounds);
+            // console.log(data);
+            return await this.dbService.users.create({
+                data
+            })            
+        } catch (error) {
+            console.log(error);
+            throw new BadGatewayException(error);
+        }
     }
 
     async updateData(id: number, data : any){

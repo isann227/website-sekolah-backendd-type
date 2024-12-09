@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Patch, ParseIntPipe, UsePipes, ValidationPipe, Delete, UseGuards, SetMetadata, Req, Res, BadGatewayException, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Patch, ParseIntPipe, UsePipes, ValidationPipe, Delete, UseGuards, SetMetadata, Req, Res, BadGatewayException, BadRequestException, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -8,6 +8,7 @@ import { Response as ExResponse } from 'express';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles/roles.guard';
 import { Roles } from 'src/auth/roles/roles.decorator';
+import { PaginationDto } from 'src/helper/pagionation.dto';
 @Controller('user')
 // @UseGuards(AuthGuard)
 // @UseGuards(JwtAuthGuard)
@@ -17,62 +18,110 @@ export class UserController {
     @Post()
     @UseGuards(AuthGuard, RolesGuard)
     @Roles('superadmin', 'admin')
-    async create(@Body() body : CreateUserDto){
+    async create(@Res() res, @Body() body : CreateUserDto){
         try {
             if (body.password !== body.password_confirmation) {
                 throw new BadRequestException('Password Confirmation is not match!')
             }
-            console.log(body);
-            // const data = await this.userService.createData(body);
-            return {
+
+            // check if user existing
+            const exist = await this.userService.existingUser(body);
+            if (exist) {
+                throw new BadRequestException('Email or Phone Number already exists!')
+            }
+            // menghapus password_confirmation karena tidak ada field pada database
+            delete body.password_confirmation;
+            
+            body.created_at = new Date()
+            body.updated_at = new Date()
+
+            let data = await this.userService.createAuth(body);
+
+            // menghapus data password yang akan dikirim ke response agar tidak terlihat user
+            delete data.password
+            return res.send(201,{
                 message: "Berhasil menyimpan data.",
-                statusCode : 200,
-                data : body
-            };
+                statusCode : 201,
+                data : HelperFun.toObject(data)
+            });
         } catch (error) {
             throw error;
         }
     }
 
-    @UseGuards(AuthGuard)
     @Get()
-    async getData(@Res() res, @Req() req){
-        // console.log(req.headers.user);
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles('superadmin', 'admin')
+    async getAll(@Res() res, @Req() req, @Query() query : PaginationDto){
         try {
-            let data = await this.userService.findOne(req.headers.user.id);
-            // console.log(data);
-            delete data.password;
-            delete data.is_logedin;
-            delete data.remember_token;
-            delete data.referal;
+            const { page, limit } = query;
+            const data = await this.userService.findAllPagin(page, limit);
+            return res.send({
+                message: "Berhasil mengambil data.",
+                statusCode : 200,
+                data : HelperFun.toObject(data)
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
 
-            return res.status(200).json({
+    @Patch('/:id')
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles('superadmin', 'admin')
+    async update(@Res() res, @Body() body : CreateUserDto, @Param('id') id: number){
+        try {
+            if (body.password !== body.password_confirmation) {
+                throw new BadRequestException('Password Confirmation is not match!')
+            }
+            // check if user existing selain data dia sendiri
+            const exist = await this.userService.existingUserExcludeId(id, body);
+            if (exist) {
+                throw new BadRequestException('Email or Phone Number already exists!')
+            }
+            // menghapus password_confirmation karena tidak ada field pada database
+            delete body.password_confirmation;
+            body.updated_at = new Date()
+            let data = await this.userService.updateData(id, body)
+            return res.send({
+                message: "Berhasil menyimpan data.",
+                statusCode : 200,
+                data : HelperFun.toObject(data)
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    @Get('/:id')
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles('superadmin', 'admin')
+    async getData(@Res() res, @Req() req,  @Param('id') id : number){
+        try {
+            let data = await this.userService.findOne(id);
+            delete data.password;
+            return res.send({
                 message: "Berhasil mengambil data.",
                 statusCode : 200,
                 data : HelperFun.toObject(data)
             })
-            return data
         } catch (error) {
-            HelperFun.loggingError('error-login',error.message, error.stack);
-            if(error?.status != undefined && error.status == 400 || error.status == 404 ){
-            return res.status(400).json({
-                success: false,
-                message: error.message,
-                statusCode : 400  
-            })
-            }
-            
-            return res.status(502).json({
-                success: false,
-                message: "Jaringan Error !",
-                statusCode : 502  
-            })
+            console.log(error);
+           throw error;
         }
     }
 
     @Delete('/:id')
-    async deleteUser(@Param('id', ParseIntPipe) id){
-        return await this.userService.deleteData(id);
+    async deleteUser(@Res() res,@Param('id', ParseIntPipe) id){
+        try {
+            await this.userService.deleteData(id);
+            return res.send({
+                message: "Berhasil menghapus data.",
+                statusCode : 200,
+                data : null
+            });
+        } catch (error) {
+            throw error
+        }
     }
- 
 }
