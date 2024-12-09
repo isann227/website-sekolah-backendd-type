@@ -14,7 +14,7 @@ const password = 'admin1996';
       email: 'admin@admin.com',
       name: 'Admin',
       username: 'admin',
-      phone: '81904597978',
+      phone: 81904597978,
       email_verified_at: new Date(),
       phone_verified_at: new Date(), 
       password : await bcrypt.hash(password, saltOrRounds),
