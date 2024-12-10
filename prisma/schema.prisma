@@ -30,7 +30,40 @@ model users {
   active_date       DateTime?        @db.Date
   created_at        DateTime?        @db.Timestamp(0)
   updated_at        DateTime?        @db.Timestamp(0)
+  profile_guru      profile_guru?
+  profile_siswa      profile_siswa?
 }
+model profile_guru {
+    id                BigInt            @id @default(autoincrement()) 
+    user_id           BigInt            @unique
+    users             users             @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "profile_guru_user_id_foreign")
+    nip               String            @db.VarChar(255)
+    tempat_lahir      String?           @db.VarChar(255)
+    tgl_lahir         DateTime?         @db.Date  
+    golongan          String?           @db.VarChar(255)
+    jenis_pns         String?           @db.VarChar(255)
+}
+
+model profile_siswa {
+    id                BigInt            @id @default(autoincrement()) 
+    user_id           BigInt            @unique
+    users             users             @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "profile_guru_user_id_foreign")
+    nis               String            @db.VarChar(255)
+    tempat_lahir      String?           @db.VarChar(255)
+    tgl_lahir         DateTime?         @db.Date  
+    nm_ibu            String?           @db.VarChar(255)
+    nm_bapak          String?           @db.VarChar(255)
+    th_masuk          String?           @db.VarChar(255)
+    status            status_siswa
+}
+
+enum status_siswa {
+  AKTIF
+  KELUAR
+  ALUMNI
+}
+
+
 
 model banner {
     id                BigInt           @id @default(autoincrement())
@@ -42,7 +75,9 @@ model banner {
     updated_at        DateTime?        @db.Timestamp(0)
 }
 
+
 enum Display_st {
   draft
   display
 }
+
