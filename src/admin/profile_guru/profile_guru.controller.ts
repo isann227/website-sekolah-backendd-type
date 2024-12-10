@@ -50,9 +50,19 @@ export class ProfileGuruController {
   }
 
   @Get()
-  async findAll() {
-    console.log(await this.userService.findAll());
-    return this.profileGuruService.findAll();
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('superadmin', 'admin')
+  async findAll(@Res() res) {
+    try {
+      const data = await this.profileGuruService.findAll();
+      return res.send(201,{
+        message: "Berhasil mengambil data.",
+        statusCode : 201,
+        data : HelperFun.toObject(data)
+    });
+    } catch (error) {
+      throw error
+    }
   }
 
   @UseGuards(AuthGuard, RolesGuard)

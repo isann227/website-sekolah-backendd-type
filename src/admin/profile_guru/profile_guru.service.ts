@@ -61,19 +61,31 @@ export class ProfileGuruService {
     }
   }
 
-  findAll() {
-    return `This action returns all profileGuru`;
+  async findAll() {
+    try {
+      return await this.dbService.profile_guru.findMany({
+        include : {
+          users : true
+        }
+      });
+    } catch (error) {
+        throw error
+    }
   }
 
   async findOne(id: number) {
-    return await this.dbService.profile_guru.findUnique({
-      where : {
-        user_id : id,
-      },
-      include : {
-        users : true
-      }
-    });
+    try {
+      return await this.dbService.profile_guru.findUnique({
+        where : {
+          user_id : id,
+        },
+        include : {
+          users : true
+        }
+      });
+    } catch (error) {
+        throw error
+    }
   }
 
   update(id: number, updateProfileGuruDto: UpdateProfileGuruDto) {
