@@ -21,6 +21,7 @@ const password = 'admin1996';
       alamat : "Indramayu",
       status : "ACTIVE",
       role : "admin",
+      jenis_user : "operator",
       active_date : new Date(),
       created_at : new Date(),
       updated_at : new Date(),

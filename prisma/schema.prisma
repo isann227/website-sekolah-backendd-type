@@ -28,6 +28,7 @@ model users {
   referal_id        String?          @db.VarChar(36)
   role              String           @db.VarChar(255)
   active_date       DateTime?        @db.Date
+  jenis_user        jenis_user
   created_at        DateTime?        @db.Timestamp(0)
   updated_at        DateTime?        @db.Timestamp(0)
   profile_guru      profile_guru?
@@ -79,5 +80,11 @@ model banner {
 enum Display_st {
   draft
   display
+}
+
+enum jenis_user {
+  operator
+  guru
+  siswa
 }
 

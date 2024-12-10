@@ -13,7 +13,7 @@ export class UserService {
     }
 
     async findDetail(id: number){
-        // jika ditampilkan dalam query = "select a.*, b.* from user a inner join role on a.role_id = b.id where b.platform_induk_st = 1;
+        // jika ditampilkan dalam query = select * from users where id = ${id};
         return await this.dbService.users.findMany({
             where: {
                 id: id

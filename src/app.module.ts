@@ -15,6 +15,7 @@ import { BannerModule } from './admin/banner/banner.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { UserModule } from './admin/user/user.module';
+import { ProfileGuruModule } from './admin/profile_guru/profile_guru.module';
 
 
 
@@ -31,6 +32,7 @@ import { UserModule } from './admin/user/user.module';
         rootPath: join(__dirname, '..', 'uploads'),
         serveRoot: '/uploads',
       }),
+      ProfileGuruModule,
   ],
   controllers: [AppController],
   providers: [AppService, AuthService],
