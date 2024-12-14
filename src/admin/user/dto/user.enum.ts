@@ -4,3 +4,9 @@ export enum Role {
     SISWA = 'siswa',
     GURU = 'guru',
 }
+
+export enum jenis_user {
+    operator = 'operator',
+    guru = 'guru',
+    siswa = 'siswa',
+}
