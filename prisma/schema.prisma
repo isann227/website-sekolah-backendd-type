@@ -33,6 +33,8 @@ model users {
   updated_at        DateTime?        @db.Timestamp(0)
   profile_guru      profile_guru?
   profile_siswa      profile_siswa?
+
+  berita berita[] @relation(map: "kategori_id_foreign")
 }
 model profile_guru {
     id                BigInt            @id @default(autoincrement()) 
@@ -58,13 +60,125 @@ model profile_siswa {
     status            status_siswa
 }
 
+model ekskul {
+    id                BigInt            @id @default(autoincrement()) 
+    logo              String?            @db.Text()
+    path_logo         String?            @db.VarChar(255)
+    nama              String            @db.VarChar(255) 
+    sejarah_singkat   String            @db.Text()
+    galeri_ekskul     galeri_ekskul[] @relation(map: "ekskyl_id_foreign")
+}
+
+model galeri_ekskul {
+    id                BigInt            @id @default(autoincrement()) 
+    ekskul_id         BigInt            
+    judul             String            @db.VarChar(255)
+    deskripsi         String            @db.VarChar(255)
+    path              String            @db.VarChar(255)
+    nama_file         String            @db.VarChar(255)
+    ekskul             ekskul             @relation(fields: [ekskul_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "ekskyl_id_foreign")
+}
+
+model struktur_org_ekskul {
+    id                BigInt            @id @default(autoincrement()) 
+    ekskul_id         BigInt            
+    order             Int
+    jabatan           String            @db.VarChar(255)
+    nama_siswa        String            @db.VarChar(255)
+    jurusan           String            @db.VarChar(255)
+    kelas             String            @db.VarChar(255)
+    nama_foto         String?           @db.Text()
+    path_foto         String?           @db.Text()
+}
+
+model jurusan {
+    id                BigInt            @id @default(autoincrement()) 
+    logo              String?            @db.Text()
+    path_logo         String?            @db.VarChar(255)
+    nama              String            @db.VarChar(255) 
+    sejarah_singkat   String            @db.Text()
+    galeri_jurusan     galeri_jurusan[] @relation(map: "ekskyl_id_foreign")
+}
+
+model galeri_jurusan {
+    id                BigInt            @id @default(autoincrement()) 
+    jurusan_id        BigInt            
+    judul             String            @db.VarChar(255)
+    deskripsi         String            @db.VarChar(255)
+    path              String            @db.VarChar(255)
+    nama_file         String            @db.VarChar(255)
+    jurusan             jurusan             @relation(fields: [jurusan_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "ekskyl_id_foreign")
+}
+
+model struktur_org_jurusan {
+    id                BigInt            @id @default(autoincrement()) 
+    jurusan_id         BigInt            
+    order             Int
+    jabatan           String            @db.VarChar(255)
+    nama_siswa        String            @db.VarChar(255)
+    jurusan           String            @db.VarChar(255)
+    kelas             String            @db.VarChar(255)
+    nama_foto         String?           @db.Text()
+    path_foto         String?           @db.Text()
+}
+
+model galeri {
+    id                BigInt            @id @default(autoincrement()) 
+    jduul             String            @db.VarChar(255)
+    deskripsi         String            @db.VarChar(255)
+    path              String            @db.VarChar(255)
+    nama_file         String            @db.VarChar(255)
+}
+
+model kategori_berita {
+    id                BigInt            @id @default(autoincrement()) 
+    nama              String?            @db.Text()
+    berita            berita?
+}
+
+model berita {
+    id                BigInt            @id @default(autoincrement()) 
+    kategori_id       BigInt            @unique
+    thumbnail_file    String @db.VarChar(255)
+    thumbnail_path    String @db.VarChar(255)
+    judul             String @db.VarChar(255)
+    slug              String @db.VarChar(255)
+    konten            String @db.Text()
+    tanggal           DateTime @db.Date
+    meta_title        String @db.VarChar(255)
+    meta_description  String @db.Text()
+    meta_keywords     String  @db.Text()
+    publish_st        Int @db.SmallInt
+    author_id         BigInt
+    users             users             @relation(fields: [author_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "kategori_id_foreign")
+    kategori_berita   kategori_berita             @relation(fields: [kategori_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "kategori_id_foreign")
+}
+
+model fasilitas {
+    id                BigInt            @id @default(autoincrement()) 
+    logo              String?            @db.Text()
+    path_logo         String?            @db.VarChar(255)
+    nama              String            @db.VarChar(255) 
+    sejarah_singkat   String            @db.Text()
+    galeri_fasilitas     galeri_fasilitas[] @relation(map: "galeri_fasilitas_id_foreign")
+}
+
+model galeri_fasilitas {
+    id                BigInt            @id @default(autoincrement()) 
+    fasilitas_id         BigInt            
+    judul             String            @db.VarChar(255)
+    deskripsi         String            @db.VarChar(255)
+    path              String            @db.VarChar(255)
+    nama_file         String            @db.VarChar(255)
+    fasilitas             fasilitas             @relation(fields: [fasilitas_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fasilitas_id_foreign")
+}
+
+
 enum status_siswa {
   AKTIF
   KELUAR
   ALUMNI
 }
-
-
 
 model banner {
     id                BigInt           @id @default(autoincrement())
@@ -87,4 +201,3 @@ enum jenis_user {
   guru
   siswa
 }
-

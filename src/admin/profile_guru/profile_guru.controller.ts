@@ -81,13 +81,13 @@ export class ProfileGuruController {
     }
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProfileGuruDto: UpdateProfileGuruDto) {
-    return this.profileGuruService.update(+id, updateProfileGuruDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateProfileGuruDto: UpdateProfileGuruDto) {
+  //   return this.profileGuruService.update(+id, updateProfileGuruDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.profileGuruService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.profileGuruService.remove(+id);
+  // }
 }

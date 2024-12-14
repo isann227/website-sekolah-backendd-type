@@ -88,11 +88,11 @@ export class ProfileGuruService {
     }
   }
 
-  update(id: number, updateProfileGuruDto: UpdateProfileGuruDto) {
-    return `This action updates a #${id} profileGuru`;
-  }
+  // update(id: number, updateProfileGuruDto: UpdateProfileGuruDto) {
+  //   return `This action updates a #${id} profileGuru`;
+  // }
 
-  remove(id: number) {
-    return `This action removes a #${id} profileGuru`;
-  }
+  // remove(id: number) {
+  //   return `This action removes a #${id} profileGuru`;
+  // }
 }
