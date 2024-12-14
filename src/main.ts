@@ -70,8 +70,8 @@ async function bootstrap() {
     })
   }else{
 
-      // Set static assets directory for serving images
-      app.use('/uploads', express.static(join(process.cwd(), 'uploads')));
+    // Set static assets directory for serving images
+    app.use('/uploads', express.static(join(process.cwd(), 'uploads')));
     // app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
     app.useGlobalPipes(
       new ValidationPipe({

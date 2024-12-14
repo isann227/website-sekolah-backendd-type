@@ -32,9 +32,8 @@ model users {
   created_at        DateTime?        @db.Timestamp(0)
   updated_at        DateTime?        @db.Timestamp(0)
   profile_guru      profile_guru?
-  profile_siswa      profile_siswa?
-
-  berita berita[] @relation(map: "kategori_id_foreign")
+  profile_siswa     profile_siswa?
+  berita            berita[]
 }
 model profile_guru {
     id                BigInt            @id @default(autoincrement()) 
@@ -61,12 +60,12 @@ model profile_siswa {
 }
 
 model ekskul {
-    id                BigInt            @id @default(autoincrement()) 
-    logo              String?            @db.Text()
-    path_logo         String?            @db.VarChar(255)
-    nama              String            @db.VarChar(255) 
-    sejarah_singkat   String            @db.Text()
-    galeri_ekskul     galeri_ekskul[] @relation(map: "ekskyl_id_foreign")
+    id                BigInt              @id @default(autoincrement()) 
+    logo              String?             @db.Text()
+    path_logo         String?             @db.VarChar(255)
+    nama              String              @db.VarChar(255) 
+    sejarah_singkat   String              @db.Text()
+    galeri_ekskul     galeri_ekskul[]   
 }
 
 model galeri_ekskul {
@@ -76,7 +75,7 @@ model galeri_ekskul {
     deskripsi         String            @db.VarChar(255)
     path              String            @db.VarChar(255)
     nama_file         String            @db.VarChar(255)
-    ekskul             ekskul             @relation(fields: [ekskul_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "ekskyl_id_foreign")
+    ekskul            ekskul            @relation(fields: [ekskul_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "ekskyl_id_foreign")
 }
 
 model struktur_org_ekskul {
@@ -121,7 +120,6 @@ model struktur_org_jurusan {
     nama_foto         String?           @db.Text()
     path_foto         String?           @db.Text()
 }
-
 model galeri {
     id                BigInt            @id @default(autoincrement()) 
     jduul             String            @db.VarChar(255)
@@ -150,7 +148,7 @@ model berita {
     meta_keywords     String  @db.Text()
     publish_st        Int @db.SmallInt
     author_id         BigInt
-    users             users             @relation(fields: [author_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "kategori_id_foreign")
+    users             users             @relation(fields: [author_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "author_id_foreign")
     kategori_berita   kategori_berita             @relation(fields: [kategori_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "kategori_id_foreign")
 }
 
