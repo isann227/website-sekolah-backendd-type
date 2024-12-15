@@ -114,9 +114,7 @@ model struktur_org_jurusan {
     jurusan_id         BigInt            
     order             Int
     jabatan           String            @db.VarChar(255)
-    nama_siswa        String            @db.VarChar(255)
-    jurusan           String            @db.VarChar(255)
-    kelas             String            @db.VarChar(255)
+    nama              String            @db.VarChar(255)
     nama_foto         String?           @db.Text()
     path_foto         String?           @db.Text()
 }

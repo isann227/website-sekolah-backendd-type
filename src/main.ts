@@ -82,6 +82,7 @@ async function bootstrap() {
     );
     app.useGlobalFilters(new HttpExceptionFilter());
     app.use(bodyParser.json({limit: "50mb"}))
+    app.use(bodyParser.urlencoded())
     app.setGlobalPrefix('/api/');
     await app.listen(3001);
   }

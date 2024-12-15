@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateDataDto } from './dto/create-master-jurusan.dto';
+import { utimes } from 'fs';
 
 @Injectable()
 export class MasterJurusanService {
@@ -24,13 +25,6 @@ export class MasterJurusanService {
 
   async createGaleri(data: any) {
     try {
-      // id                BigInt            @id @default(autoincrement()) 
-      // jurusan_id        BigInt            
-      // judul             String            @db.VarChar(255)
-      // deskripsi         String            @db.VarChar(255)
-      // path              String            @db.VarChar(255)
-      // nama_file         String            @db.VarChar(255)
-
       console.log(data)
       return this.dbService.$transaction(async (prisma) => {
 
@@ -48,6 +42,25 @@ export class MasterJurusanService {
       });
 
 
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async createStruktur(data: any) {
+    try {
+        return this.dbService.$transaction(async (prisma) => {
+          data.struktur.forEach(async item => {
+            item.jurusan_id = +data.jurusan_id
+            item.nama_foto = item.files
+            item.path_foto = data.path
+            item.order = +item.order
+            delete item.files
+            await this.dbService.struktur_org_jurusan.create({data : item});
+          });
+          return data;
+        });
+  
     } catch (error) {
       throw error;
     }
