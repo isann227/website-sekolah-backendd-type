@@ -10,8 +10,8 @@ export class CreateDataDto {
     sejarah_singkat:string
 
     @IsOptional()
-    filename:string
+    logo:string
 
     @IsOptional()
-    path:string
+    path_logo:string
   }

@@ -13,6 +13,7 @@ import {
   HttpException,
   HttpStatus,
   ConsoleLogger,
+  UseGuards,
 } from '@nestjs/common';
 import { MasterJurusanService } from './master-jurusan.service';
 import {
@@ -28,6 +29,9 @@ import { CreateDataDto } from './dto/create-master-jurusan.dto';
 import { HelperFun } from 'src/helper/helper_fun';
 import { StrukturDto } from './dto/struktur-jurusan-dto.dto';
 import { GaleriJurusanDto } from './dto/galeri-jurusan-dto.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { RolesGuard } from 'src/auth/roles/roles.guard';
+import { Roles } from 'src/auth/roles/roles.decorator';
 
 @Controller('jurusan')
 export class MasterJurusanController {
@@ -37,6 +41,8 @@ export class MasterJurusanController {
   }
 
   @Post()
+  // @UseGuards(AuthGuard, RolesGuard)
+  // @Roles('superadmin', 'admin')
   @UseInterceptors(AnyFilesInterceptor())
   async create(
     @Body() data: CreateDataDto,
@@ -44,9 +50,38 @@ export class MasterJurusanController {
     @Res() res,
   ) {
     try {
-      data.filename = file.filename;
-      data.path = this.pathJurusan;
+      data.logo = file.filename;
+      data.path_logo = this.pathJurusan;
       await this.masterJurusanService.create(data);
+      return res.send(201, {
+        message: 'Berhasil menyimpan data.',
+        statusCode: 201,
+        data: HelperFun.toObject(data),
+      });
+    } catch (error) {
+      console.warn(error);
+    }
+    // return this.masterJurusanService.create(createMasterJurusanDto);
+  }
+
+  @Patch(':id')
+    // @UseGuards(AuthGuard, RolesGuard)
+  // @Roles('superadmin', 'admin')
+  @UseInterceptors(
+    FileInterceptor('logo')
+  )
+  async update(
+    @Param('id') id : number,
+    @Body() data: CreateDataDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Res() res,
+  ) {
+    try {
+      if (file) {
+        data.logo = file.filename;
+        data.path_logo = this.pathJurusan; 
+      }
+      await this.masterJurusanService.update(id, data);
       return res.send(201, {
         message: 'Berhasil menyimpan data.',
         statusCode: 201,

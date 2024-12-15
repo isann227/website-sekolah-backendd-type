@@ -9,21 +9,13 @@ export class MasterJurusanService {
   async create(data: CreateDataDto) {
     try {
       return this.dbService.$transaction(async (prisma) => {
-        const mapping = {
-          logo: data.filename,
-          path_logo: data.path,
-          nama: data.nama,
-          sejarah_singkat: data.sejarah_singkat,
-        };
-
-        return await this.dbService.jurusan.create({ data: mapping })
-      }).catch(error => {
-        throw error
-      });
+        return await prisma.jurusan.create({ data: data })
+      })
     } catch (error) {
       throw error;
     }
   }
+  
 
   async createGaleri(data: any) {
     try {
@@ -66,8 +58,16 @@ export class MasterJurusanService {
     return `This action returns a #${id} masterJurusan`;
   }
 
-  update(id: number, updateMasterJurusanDto) {
-    return `This action updates a #${id} masterJurusan`;
+  update(id: number, data : any) {
+    try {
+      return this.dbService.$transaction(async (prisma) => {
+        return await prisma.jurusan.update({
+          data, where : {id}
+        })
+      })
+    } catch (error) {
+      throw error;
+    }
   }
 
   remove(id: number) {
