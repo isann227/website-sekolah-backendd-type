@@ -5,6 +5,7 @@ export class StrukturDto {
     @IsOptional()
     path: string;
     
+    @Type(() => Number) // Automatically converts the input to a number
     @IsNumber()
     jurusan_id: number;
   

@@ -26,148 +26,65 @@ import * as path from 'path';
 import { diskStorage } from 'multer';
 import { CreateDataDto } from './dto/create-master-jurusan.dto';
 import { HelperFun } from 'src/helper/helper_fun';
-import { GaleriJurusanDto } from './dto/galeri-jurusan-dto.dto';
 import { StrukturDto } from './dto/struktur-jurusan-dto.dto';
-
-export interface StrukturRiset {
-  order: number;
-  nama: string;
-  jabatan: string;
-  files: Express.Multer.File[];
-}
+import { GaleriJurusanDto } from './dto/galeri-jurusan-dto.dto';
 
 @Controller('jurusan')
 export class MasterJurusanController {
-  constructor(private readonly masterJurusanService: MasterJurusanService) {}
 
-  // @Post()
-  // @UseInterceptors(
-  //   FileInterceptor('img_jurusan', {
-  //     storage: multer.diskStorage({
-  //       destination: './uploads/jurusan/image', // Directory to store images
-  //       filename: (req, file, cb) => {
-  //         // Generating a unique filename based on UUID
-  //         const filename = `${Date.now()}${path.extname(file.originalname)}`;
-  //         cb(null, filename); // Save the file with the generated name
-  //       },
-  //     }),
-  //   }),
-  // ) // Handling the file upload
-  // async create(
-  //   @Body() data: CreateDataDto,
-  //   @UploadedFile() file: Express.Multer.File,
-  //   @Res() res,
-  // ) {
-  //   try {
-  //     const file_path = '/uploads/jurusan/image';
-  //     data.filename = file.filename;
-  //     data.path = file_path;
-  //     await this.masterJurusanService.create(data);
-  //     return res.send(201, {
-  //       message: 'Berhasil menyimpan data.',
-  //       statusCode: 201,
-  //       data: HelperFun.toObject(data),
-  //     });
-  //   } catch (error) {
-  //     console.warn(error);
-  //   }
-  //   // return this.masterJurusanService.create(createMasterJurusanDto);
-  // }
+  private pathJurusan = 'uploads/jurusan/image/'
+  constructor(private readonly masterJurusanService: MasterJurusanService) {
+  }
 
-  // @Post('galeri')
-  // @UseInterceptors(
-  //   FilesInterceptor('img_galeri_jurusan', 2, {
-  //     storage: multer.diskStorage({
-  //       destination: './uploads/jurusan/galeri/image', // Directory to store images
-  //       filename: (req, file, cb) => {
-  //         // Generating a unique filename based on UUID
-  //         const filename = `${Date.now()}${path.extname(file.originalname)}`;
-  //         cb(null, filename); // Save the file with the generated name
-  //       },
-  //     }),
-  //   }),
-  // )
-  // async createGaleri(
-  //   @Body() data: GaleriJurusanDto,
-  //   @UploadedFiles() files: Array<Express.Multer.File>,
-  //   @Res() res,
-  // ) {
-  //   try {
-  //     console.log(data);
-  //     // Process the uploaded files here
-  //     data.filename = [];
-  //     data.path = '/uploads/jurusan/galeri/image';
-  //     files.map((item, key) => {
-  //       data.filename.push(item.filename);
-  //     });
-  //     await this.masterJurusanService.createGaleri(data);
+  @Post()
+  @UseInterceptors(AnyFilesInterceptor())
+  async create(
+    @Body() data: CreateDataDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Res() res,
+  ) {
+    try {
+      data.filename = file.filename;
+      data.path = this.pathJurusan;
+      await this.masterJurusanService.create(data);
+      return res.send(201, {
+        message: 'Berhasil menyimpan data.',
+        statusCode: 201,
+        data: HelperFun.toObject(data),
+      });
+    } catch (error) {
+      console.warn(error);
+    }
+    // return this.masterJurusanService.create(createMasterJurusanDto);
+  }
 
-  //     return res.send(201, {
-  //       message: 'Berhasil menyimpan data.',
-  //       statusCode: 201,
-  //       data: HelperFun.toObject(data),
-  //     });
-  //   } catch (error) {
-  //     // Handle errors, including unexpected field errors
-  //     if (error.message.includes('Unexpected field')) {
-  //       throw new HttpException(
-  //         'Invalid request data. Please check field names and data format.',
-  //         HttpStatus.BAD_REQUEST,
-  //       );
-  //     } else {
-  //       // Handle other errors
-  //       throw error;
-  //     }
-  //   }
-  //   // return this.masterJurusanService.create(createMasterJurusanDto);
-  // }
+  @Post('galeri')
+  @UseInterceptors(AnyFilesInterceptor())
+  async createGaleri(
+    @Body() body: GaleriJurusanDto,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
+    try {
+      // console.log(body);
+      body.path = this.pathJurusan;
+      body.galeri.map((item, key) => {
+        item.file = files[key].filename;
+      });
 
-  // @Post('struktur')
-  // @UseInterceptors(
-  //   FilesInterceptor('img_struktur_jurusan', 2, {
-  //     storage: multer.diskStorage({
-  //       destination: './uploads/jurusan/struktur/image', // Directory to store images
-  //       filename: (req, file, cb) => {
-  //         // Generating a unique filename based on UUID
-  //         const filename = `${Date.now()}${path.extname(file.originalname)}`;
-  //         cb(null, filename); // Save the file with the generated name
-  //       },
-  //     }),
-  //   }),
-  // )
-  // async createStruktur(
-  //   @Body() data: StrukturJurusanDto,
-  //   @UploadedFiles() files: Array<Express.Multer.File>,
-  //   @Res() res,
-  // ) {
-  //   try {
-  //     // Process the uploaded files here
-  //     data.filename = [];
-  //     data.path = '/uploads/jurusan/struktur/image';
-  //     files.map((item, key) => {
-  //       data.filename.push(item.filename);
-  //     });
-  //     await this.masterJurusanService.createStruktur(data);
+      await this.masterJurusanService.createGaleri(body).catch(error => {
+        throw error;
+      })
 
-  //     return res.send(201, {
-  //       message: 'Berhasil menyimpan data.',
-  //       statusCode: 201,
-  //       data: HelperFun.toObject(data),
-  //     });
-  //   } catch (error) {
-  //     // Handle errors, including unexpected field errors
-  //     if (error.message.includes('Unexpected field')) {
-  //       throw new HttpException(
-  //         'Invalid request data. Please check field names and data format.',
-  //         HttpStatus.BAD_REQUEST,
-  //       );
-  //     } else {
-  //       // Handle other errors
-  //       throw error;
-  //     }
-  //   }
-  //   // return this.masterJurusanService.create(createMasterJurusanDto);
-  // }
+      return {
+        message: 'Berhasil menyimpan data.',
+        statusCode: 201,
+        data: body,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
 
   @Post('struktur')
   @UseInterceptors(AnyFilesInterceptor())
@@ -177,7 +94,7 @@ export class MasterJurusanController {
   ) {
     try {
       // console.log(body);
-      body.path = 'uploads/jurusan/image/';
+      body.path = this.pathJurusan;
       body.struktur.map((item, key) => {
         item.file = files[key].filename;
       });

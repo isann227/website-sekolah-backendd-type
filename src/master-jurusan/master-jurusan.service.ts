@@ -16,7 +16,9 @@ export class MasterJurusanService {
           sejarah_singkat: data.sejarah_singkat,
         };
 
-        return await this.dbService.jurusan.create({ data: mapping });
+        return await this.dbService.jurusan.create({ data: mapping })
+      }).catch(error => {
+        throw error
       });
     } catch (error) {
       throw error;
@@ -25,23 +27,15 @@ export class MasterJurusanService {
 
   async createGaleri(data: any) {
     try {
-      console.log(data)
-      return this.dbService.$transaction(async (prisma) => {
-
-        for (let i = 0; i < data.judul.length; i++) {
-          const mapping = {
-            jurusan_id : data.jurusan_id,
-            judul: data.judul[i],
-            deskripsi: data.deskripsi[i],
-            path: data.path,
-            nama_file: data.filename[i],
-          };
-          await this.dbService.galeri_jurusan.create({data : mapping});
-        }
-        return data;
-      });
-
-
+        return this.dbService.$transaction(async (prisma) => {
+          for (const item of data.galeri) {
+            item.jurusan_id = +data.jurusan_id
+            item.nama_file = item.file
+            item.path = data.path
+            delete item.file
+            await prisma.galeri_jurusan.create({data : item})
+          }
+        })
     } catch (error) {
       throw error;
     }
@@ -50,17 +44,15 @@ export class MasterJurusanService {
   async createStruktur(data: any) {
     try {
         return this.dbService.$transaction(async (prisma) => {
-          data.struktur.forEach(async item => {
+          for (const item of data.struktur) {
             item.jurusan_id = +data.jurusan_id
-            item.nama_foto = item.files
+            item.nama_foto = item.file
             item.path_foto = data.path
             item.order = +item.order
-            delete item.files
+            delete item.file
             await this.dbService.struktur_org_jurusan.create({data : item});
-          });
-          return data;
-        });
-  
+        }
+      })
     } catch (error) {
       throw error;
     }
