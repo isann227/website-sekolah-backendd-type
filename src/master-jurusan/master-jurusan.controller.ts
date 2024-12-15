@@ -27,7 +27,7 @@ import { diskStorage } from 'multer';
 import { CreateDataDto } from './dto/create-master-jurusan.dto';
 import { HelperFun } from 'src/helper/helper_fun';
 import { GaleriJurusanDto } from './dto/galeri-jurusan-dto.dto';
-import { StrukturJurusanDto } from './dto/struktur-jurusan-dto.dto';
+import { StrukturDto } from './dto/struktur-jurusan-dto.dto';
 
 export interface StrukturRiset {
   order: number;
@@ -169,17 +169,17 @@ export class MasterJurusanController {
   //   // return this.masterJurusanService.create(createMasterJurusanDto);
   // }
 
-  @Post('struktur-riset')
+  @Post('struktur')
   @UseInterceptors(AnyFilesInterceptor())
-  async createStrukturRiset(
-    @Body() body: any,
+  async createStruktur(
+    @Body() body: StrukturDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
     try {
       // console.log(body);
       body.path = 'uploads/jurusan/image/';
       body.struktur.map((item, key) => {
-        item.files = files[key].filename;
+        item.file = files[key].filename;
       });
 
       await this.masterJurusanService.createStruktur(body)
