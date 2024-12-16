@@ -8,8 +8,10 @@ export class StrukturDto {
     @Type(() => Number) // Automatically converts the input to a number
     @IsNumber()
     jurusan_id: number;
-  
+
     @IsArray()
+    @ValidateNested({ each: true }) // Validasi setiap item dalam array
+    @Type(() => StrukturItemDto)   // Transform objek di dalam array ke StrukturItemDto
     struktur: StrukturItemDto[];
   }
   

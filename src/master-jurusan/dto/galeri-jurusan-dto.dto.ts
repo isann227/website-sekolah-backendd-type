@@ -8,8 +8,9 @@ export class GaleriJurusanDto {
     @IsNumber()
     jurusan_id: number;
   
-    @IsArray()
-    galeri: GaleriItemDto[];
+      @ValidateNested({ each: true }) // Validasi setiap item dalam array
+      @Type(() => GaleriItemDto)   // Transform objek di dalam array ke StrukturItemDto
+      galeri: GaleriItemDto[];
   }
   
   export class GaleriItemDto {
