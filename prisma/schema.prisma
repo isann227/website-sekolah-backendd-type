@@ -66,6 +66,8 @@ model ekskul {
     nama              String              @db.VarChar(255) 
     sejarah_singkat   String              @db.Text()
     galeri_ekskul     galeri_ekskul[]   
+    struktur_org_ekskul     struktur_org_ekskul[]
+
 }
 
 model galeri_ekskul {
@@ -88,6 +90,7 @@ model struktur_org_ekskul {
     kelas             String            @db.VarChar(255)
     nama_foto         String?           @db.Text()
     path_foto         String?           @db.Text()
+    ekskul            ekskul            @relation(fields: [ekskul_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "ekskul_id_foreign")
 }
 
 model jurusan {
@@ -97,6 +100,7 @@ model jurusan {
     nama              String            @db.VarChar(255) 
     sejarah_singkat   String            @db.Text()
     galeri_jurusan     galeri_jurusan[] @relation(map: "ekskyl_id_foreign")
+    struktur_org_jurusan     struktur_org_jurusan[] 
 }
 
 model galeri_jurusan {
@@ -106,7 +110,7 @@ model galeri_jurusan {
     deskripsi         String            @db.VarChar(255)
     path              String            @db.VarChar(255)
     nama_file         String            @db.VarChar(255)
-    jurusan             jurusan             @relation(fields: [jurusan_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "ekskyl_id_foreign")
+    jurusan           jurusan             @relation(fields: [jurusan_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "ekskyl_id_foreign")
 }
 
 model struktur_org_jurusan {
@@ -117,6 +121,7 @@ model struktur_org_jurusan {
     nama              String            @db.VarChar(255)
     nama_foto         String?           @db.Text()
     path_foto         String?           @db.Text()
+    jurusan           jurusan             @relation(fields: [jurusan_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "struktur_org_id_foreign")
 }
 model galeri {
     id                BigInt            @id @default(autoincrement()) 
