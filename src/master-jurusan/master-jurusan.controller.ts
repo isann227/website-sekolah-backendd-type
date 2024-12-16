@@ -124,7 +124,7 @@ export class MasterJurusanController {
 
       // console.log(body);
       body.path = this.pathJurusan;
-      body.galeri.map((item, key) => {
+      body.galeri.forEach((item, key) => {
         item.file = files[key].filename;
       });
 
@@ -141,7 +141,6 @@ export class MasterJurusanController {
       throw error;
     }
   }
-
 
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('superadmin', 'admin')
@@ -162,8 +161,11 @@ export class MasterJurusanController {
       }
 
       body.path = this.pathJurusan;
-      body.struktur.map((item, key) => {
-        item.file = files[key].filename;
+      body.struktur.forEach((item, key) => {
+        console.log(files[key])
+        if (files[key]) {
+          item.file = files[key].filename;          
+        }
       });
 
       await this.masterJurusanService.createStruktur(body)
@@ -181,64 +183,67 @@ export class MasterJurusanController {
   @UseGuards(AuthGuard, RolesGuard)
   @Roles('superadmin', 'admin')
   @Patch('struktur/:id')
-  @UseInterceptors(AnyFilesInterceptor())
-  async updateStruktur(
-    @Param('id') id: number,
-    @Res() res,
-    @Body() body: StrukturDtoUpdate,
-    @UploadedFiles() files: Array<Express.Multer.File>,
-  ) {
-    try {
-      body.path = this.pathJurusan;
-      body.struktur.map((item, key) => {
-        if (files) {
-          item.file = files[key].filename;          
-        }
-      });
+  @UseInterceptors(FileInterceptor('file'))
 
-      await this.masterJurusanService.updateStruktur(body)
+  // async updateStruktur(
+  //   @Param('id') id: number,
+  //   @Res() res,
+  //   @Body() body: StrukturDtoUpdate,
+  //   @UploadedFiles() files: Express.Multer.File[],
+  // ) {
+  //   try {
+  //     console.log(files)
+  //     body.path = this.pathJurusan;
+  //     body.struktur.forEach((item, key) => {
+  //       if (files && files[key]) {
+  //           item.file = files[key].filename;
+  //           console.log(`Mengisi file untuk item dengan index ${key}: ${files[key].filename}`);
+  //       }
+  //     });
 
-      return res.send(200,{
-        message: "Berhasil menyimpan data.",
-        statusCode : 200,
-        data : HelperFun.toObject(body)
-      });
-    } catch (error) {
-      throw error;
-    }
-  }
+  //     await this.masterJurusanService.updateStruktur(body)
 
-  @Patch('struktur/:id')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('superadmin', 'admin')
-  @UseInterceptors(AnyFilesInterceptor())
-  async updateGaleri(
-    @Res() res,
-    @Param('id') id: number,
-    @Body() body: GaleriJurusanDtoUpdate,
-    @UploadedFiles() files: Array<Express.Multer.File>,
-  ) {
-    try {
-      body.path = this.pathJurusan;
-      body.galeri.map((item, key) => {
-        if (files) {
-            item.file = files[key].filename;
-        }
-      });
+  //     return res.send(200,{
+  //       message: "Berhasil menyimpan data.",
+  //       statusCode : 200,
+  //       data : HelperFun.toObject(body)
+  //     });
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
-      await this.masterJurusanService.updateGaleri(body).catch(error => {
-        throw error;
-      })
+  // @Patch('struktur/:id')
+  // @UseGuards(AuthGuard, RolesGuard)
+  // @Roles('superadmin', 'admin')
+  // @UseInterceptors(AnyFilesInterceptor())
+  // async updateGaleri(
+  //   @Res() res,
+  //   @Param('id') id: number,
+  //   @Body() body: GaleriJurusanDtoUpdate,
+  //   @UploadedFiles() files: Array<Express.Multer.File>,
+  // ) {
+  //   try {
+  //     body.path = this.pathJurusan;
+  //     body.galeri.map((item, key) => {
+  //       if (files) {
+  //           item.file = files[key].filename;
+  //       }
+  //     });
 
-      return res.send(200,{
-        message: "Berhasil menyimpan data.",
-        statusCode : 200,
-        data : HelperFun.toObject(body)
-      });
-    } catch (error) {
-      throw error;
-    }
-  }
+  //     await this.masterJurusanService.updateGaleri(body).catch(error => {
+  //       throw error;
+  //     })
+
+  //     return res.send(200,{
+  //       message: "Berhasil menyimpan data.",
+  //       statusCode : 200,
+  //       data : HelperFun.toObject(body)
+  //     });
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
   @Get(':id')
   async findOne(@Param('id') id: number, @Res() res, @Req() req) {

@@ -61,7 +61,7 @@ export class MasterJurusanService {
             }
 
             const params_update = {
-              order : item.order,
+              order : +item.order,
               jabatan : item.jabatan,
               nama : item.nama,
               nama_foto :item.nama_foto,
