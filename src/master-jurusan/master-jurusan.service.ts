@@ -115,7 +115,7 @@ export class MasterJurusanService {
 
     const filters: any = {};
     if (search) {
-        filters.title = { contains: search }; // Filter berdasarkan "title"
+        filters.nama = { contains: search }; // Filter berdasarkan "title"
     }
 
     let dataOut = await this.dbService.jurusan.findMany(

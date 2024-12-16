@@ -70,7 +70,7 @@ export class MasterJurusanController {
         data: HelperFun.toObject(data),
       });
     } catch (error) {
-      console.warn(error);
+      throw error;
     }
     // return this.masterJurusanService.create(createMasterJurusanDto);
   }
@@ -246,9 +246,9 @@ export class MasterJurusanController {
   // }
 
   @Get(':id')
-  async findOne(@Param('id') id: number, @Res() res, @Req() req) {
+  async findOne(@Param('id') id: string, @Res() res, @Req() req) {
     try {
-      const data = await this.masterJurusanService.findOne(id);      
+      const data = await this.masterJurusanService.findOne(+id);      
       return res.send(200,{
         message: "Berhasil mengambil data.",
         statusCode : 200,
