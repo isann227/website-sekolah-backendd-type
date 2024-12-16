@@ -25,7 +25,7 @@ export class AppController {
   @Post('login')
   async login(@Body() loginDto: LoginDto, @Res() res) {
         let token = await this.autService.signIn(loginDto);
-        return res.send(200,{
+        return res.status(200).send({
           message: "Login Sukses",
           statusCode : 200,
           data : token
