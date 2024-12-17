@@ -11,6 +11,7 @@ const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 import * as express from 'express';
 import { join } from 'path';
+import { HttpExceptionFilter } from './exception/http-exception.filter';
 
 
 async function bootstrap() {
@@ -69,11 +70,19 @@ async function bootstrap() {
     })
   }else{
 
-      // Set static assets directory for serving images
-      app.use('/uploads', express.static(join(process.cwd(), 'uploads')));
+    // Set static assets directory for serving images
+    app.use('/uploads', express.static(join(process.cwd(), 'uploads')));
     // app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
-    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true, // Enables automatic transformation
+        whitelist: true, // Strips unknown properties
+        forbidNonWhitelisted: true, // Throws error for unknown properties
+      }),
+    );
+    app.useGlobalFilters(new HttpExceptionFilter());
     app.use(bodyParser.json({limit: "50mb"}))
+    app.use(bodyParser.urlencoded())
     app.setGlobalPrefix('/api/');
     await app.listen(3001);
   }

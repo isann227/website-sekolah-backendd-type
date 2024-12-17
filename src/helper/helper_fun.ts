@@ -22,6 +22,25 @@ export class HelperFun {
     }
 
 
+    static mappingNullableFile(body, files){
+       // Map files to struktur based on fieldname
+      const mappedFiles = body.struktur.map((struktur, index) => {
+        const matchingFile = files.find(file => file?.fieldname === `struktur[${index}][file]`);
+        return matchingFile || null;
+      });
+
+      // Process the files and body
+      for (let i = 0; i < body.struktur.length; i++) {
+        if (mappedFiles[i]) {
+          body.struktur[i].file = mappedFiles[i]; 
+        } else {
+          body.struktur[i].file = null;
+        }
+      }
+
+      return body
+    }
+
 
     static decodeBase64(id){
         return Buffer.from(id, 'base64').toString('ascii')
@@ -95,8 +114,8 @@ static convertBigIntToString(data){
 
   static loggingError(title : string,msg:any, stack? : string){
     var currtime = new Date().toLocaleString(undefined, {year: 'numeric', month: '2-digit', day: '2-digit', weekday:"long", hour: '2-digit', hour12: false, minute:'2-digit', second:'2-digit'});
-    Logger.error(title + ' >> ' + JSON.stringify(msg), "stackTrace : " + stack ?? "")
-    Logger.warn(title + ' >> ' + JSON.stringify(msg), "stackTrace : " + stack ?? "")
+    Logger.error(title + ' >> ' + JSON.stringify(msg), "stackTrace : " + stack)
+    Logger.warn(title + ' >> ' + JSON.stringify(msg), "stackTrace : " + stack)
     // axios.post('https://hooks.slack.com/services/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', {
     //     text: ' [API NEST] '+title+' ('+currtime+') >> '+msg+' >> ' + "stackTrace : " + stack ?? "",
     // });

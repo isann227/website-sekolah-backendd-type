@@ -2,7 +2,6 @@ import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
-import { UserModule } from './user/user.module';
 import { RequestLoggerMiddleware } from '../middleware/request-logger.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -15,6 +14,9 @@ import { AuthService } from './auth/auth.service';
 import { BannerModule } from './admin/banner/banner.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { UserModule } from './admin/user/user.module';
+import { ProfileGuruModule } from './admin/profile_guru/profile_guru.module';
+import { MasterJurusanModule } from './master-jurusan/master-jurusan.module';
 
 
 
@@ -31,6 +33,8 @@ import { join } from 'path';
         rootPath: join(__dirname, '..', 'uploads'),
         serveRoot: '/uploads',
       }),
+      ProfileGuruModule,
+      MasterJurusanModule,
   ],
   controllers: [AppController],
   providers: [AppService, AuthService],
