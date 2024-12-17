@@ -162,7 +162,6 @@ export class MasterJurusanController {
 
       body.path = this.pathJurusan;
       body.struktur.forEach((item, key) => {
-        console.log(files[key])
         if (files[key]) {
           item.file = files[key].filename;          
         }
@@ -180,38 +179,43 @@ export class MasterJurusanController {
     }
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles('superadmin', 'admin')
-  @Patch('struktur/:id')
-  @UseInterceptors(FileInterceptor('file'))
+  // @UseGuards(AuthGuard, RolesGuard)
+  // @Roles('superadmin', 'admin')
+  @Patch('/:id/struktur')
+  @UseInterceptors(
+    AnyFilesInterceptor()
+  )
+  // @UseInterceptors(FilesInterceptor('file'))
+  async updateStruktur(
+    @Param('id') id: number,
+    @Res() res,
+    @Body() body: StrukturDtoUpdate,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
+    try {
+      // mapping file yang null
+      body = HelperFun.mappingNullableFile(body,files);
+      // console.log(files, body)
+      body.struktur.forEach((item, key) => {
+        if (item.file) {
+            item.nama_foto = item.file.filename;
+            item.path_foto = this.pathJurusan;
+            console.log(`Mengisi file untuk item dengan index ${key}: ${item.file.filename}`);
+        }
+        delete item.file;
+      });
 
-  // async updateStruktur(
-  //   @Param('id') id: number,
-  //   @Res() res,
-  //   @Body() body: StrukturDtoUpdate,
-  //   @UploadedFiles() files: Express.Multer.File[],
-  // ) {
-  //   try {
-  //     console.log(files)
-  //     body.path = this.pathJurusan;
-  //     body.struktur.forEach((item, key) => {
-  //       if (files && files[key]) {
-  //           item.file = files[key].filename;
-  //           console.log(`Mengisi file untuk item dengan index ${key}: ${files[key].filename}`);
-  //       }
-  //     });
+      await this.masterJurusanService.updateStruktur(body)
 
-  //     await this.masterJurusanService.updateStruktur(body)
-
-  //     return res.send(200,{
-  //       message: "Berhasil menyimpan data.",
-  //       statusCode : 200,
-  //       data : HelperFun.toObject(body)
-  //     });
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+      return res.send(200,{
+        message: "Berhasil menyimpan data.",
+        statusCode : 200,
+        data : HelperFun.toObject(body)
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
 
   // @Patch('struktur/:id')
   // @UseGuards(AuthGuard, RolesGuard)

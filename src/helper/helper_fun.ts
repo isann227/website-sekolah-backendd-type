@@ -22,6 +22,25 @@ export class HelperFun {
     }
 
 
+    static mappingNullableFile(body, files){
+       // Map files to struktur based on fieldname
+      const mappedFiles = body.struktur.map((struktur, index) => {
+        const matchingFile = files.find(file => file?.fieldname === `struktur[${index}][file]`);
+        return matchingFile || null;
+      });
+
+      // Process the files and body
+      for (let i = 0; i < body.struktur.length; i++) {
+        if (mappedFiles[i]) {
+          body.struktur[i].file = mappedFiles[i]; 
+        } else {
+          body.struktur[i].file = null;
+        }
+      }
+
+      return body
+    }
+
 
     static decodeBase64(id){
         return Buffer.from(id, 'base64').toString('ascii')

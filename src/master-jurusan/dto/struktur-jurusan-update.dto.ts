@@ -4,12 +4,14 @@ import { OrgStructureDto } from "./craete-master-jurusan-galeries.dto";
 export class StrukturDtoUpdate{
     @IsOptional()
     path: string;
-    
+
     @Type(() => Number) // Automatically converts the input to a number
     @IsNumber()
     jurusan_id: number;
-  
+    
     @IsArray()
+    @ValidateNested({ each: true }) // Validasi setiap item dalam array
+    @Type(() => StrukturItemDto)   // Transform objek di dalam array ke StrukturItemDto
     struktur: StrukturItemDto[];
   }
   
@@ -29,5 +31,12 @@ export class StrukturDtoUpdate{
     jabatan: string;
   
     @IsOptional()
-    file: string;
+    // file: string;
+    file: Express.Multer.File | null;
+
+    @IsOptional()
+    nama_foto :string       
+
+    @IsOptional()
+    path_foto : string     
   }
