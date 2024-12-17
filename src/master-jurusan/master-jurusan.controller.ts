@@ -35,7 +35,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { RolesGuard } from 'src/auth/roles/roles.guard';
 import { Roles } from 'src/auth/roles/roles.decorator';
 import { StrukturDtoUpdate } from './dto/struktur-jurusan-update.dto';
-import { GaleriJurusanDtoUpdate } from './dto/galeri-jurusan-update.dto';
+import { GaleriDtoUpdate, GaleriJurusanDtoUpdate } from './dto/galeri-jurusan-update.dto';
 
 @Controller('jurusan')
 export class MasterJurusanController {
@@ -179,9 +179,9 @@ export class MasterJurusanController {
     }
   }
 
-  // @UseGuards(AuthGuard, RolesGuard)
-  // @Roles('superadmin', 'admin')
   @Patch('/:id/struktur')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('superadmin', 'admin')
   @UseInterceptors(
     AnyFilesInterceptor()
   )
@@ -217,37 +217,43 @@ export class MasterJurusanController {
     }
   }
 
-  // @Patch('struktur/:id')
-  // @UseGuards(AuthGuard, RolesGuard)
-  // @Roles('superadmin', 'admin')
-  // @UseInterceptors(AnyFilesInterceptor())
-  // async updateGaleri(
-  //   @Res() res,
-  //   @Param('id') id: number,
-  //   @Body() body: GaleriJurusanDtoUpdate,
-  //   @UploadedFiles() files: Array<Express.Multer.File>,
-  // ) {
-  //   try {
-  //     body.path = this.pathJurusan;
-  //     body.galeri.map((item, key) => {
-  //       if (files) {
-  //           item.file = files[key].filename;
-  //       }
-  //     });
+  @Patch('/:id/galeri')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('superadmin', 'admin')
+  @UseInterceptors(
+    AnyFilesInterceptor()
+  )
+  // @UseInterceptors(FilesInterceptor('file'))
+  async updateGaleri(
+    @Param('id') id: number,
+    @Res() res,
+    @Body() body: GaleriDtoUpdate,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
+    try {
+      // mapping file yang null
+      body = HelperFun.mappingNullableFile(body,files);
+      // console.log(files, body)
+      body.galeri.forEach((item, key) => {
+        if (item.file) {
+            item.nama_foto = item.file.filename;
+            item.path_foto = this.pathJurusan;
+            console.log(`Mengisi file untuk item dengan index ${key}: ${item.file.filename}`);
+        }
+        delete item.file;
+      });
 
-  //     await this.masterJurusanService.updateGaleri(body).catch(error => {
-  //       throw error;
-  //     })
+      await this.masterJurusanService.updateGaleri(body)
 
-  //     return res.send(200,{
-  //       message: "Berhasil menyimpan data.",
-  //       statusCode : 200,
-  //       data : HelperFun.toObject(body)
-  //     });
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+      return res.send(200,{
+        message: "Berhasil menyimpan data.",
+        statusCode : 200,
+        data : HelperFun.toObject(body)
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
 
   @Get(':id')
   async findOne(@Param('id') id: string, @Res() res, @Req() req) {
